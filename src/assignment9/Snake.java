@@ -9,24 +9,30 @@ public class Snake {
 	private LinkedList<BodySegment> segments;
 	private double deltaX;
 	private double deltaY;
+
+	private BodySegment prevLast;
 	
 	public Snake() {
-		//FIXME - set up the segments instance variable
 		deltaX = 0;
 		deltaY = 0;
+
+		segments = new LinkedList<BodySegment>();
+
+		BodySegment e = new BodySegment(0.5, 0.5, SEGMENT_SIZE);
+		segments.add(e);
 	}
 	
 	public void changeDirection(int direction) {
-		if(direction == 1) { //up
+		if(direction == 1) { // up
 			deltaY = MOVEMENT_SIZE;
 			deltaX = 0;
-		} else if (direction == 2) { //down
+		} else if (direction == 2) { // down
 			deltaY = -MOVEMENT_SIZE;
 			deltaX = 0;
-		} else if (direction == 3) { //left
+		} else if (direction == 3) { // left
 			deltaY = 0;
 			deltaX = -MOVEMENT_SIZE;
-		} else if (direction == 4) { //right
+		} else if (direction == 4) { // right
 			deltaY = 0;
 			deltaX = MOVEMENT_SIZE;
 		}
@@ -37,14 +43,21 @@ public class Snake {
 	 * based on the current direction of travel
 	 */
 	public void move() {
-		//FIXME
+		BodySegment seg = segments.getFirst();
+
+		segments.addFirst(new BodySegment(seg.getX()+this.deltaX, seg.getY()+this.deltaY, SEGMENT_SIZE, seg.getColor()));
+		
+		this.prevLast = segments.getLast();
+		segments.removeLast();
 	}
 	
 	/**
 	 * Draws the snake by drawing each segment
 	 */
 	public void draw() {
-		//FIXME
+		for (BodySegment seg : segments) {
+			seg.draw();
+		}
 	}
 	
 	/**
@@ -53,7 +66,13 @@ public class Snake {
 	 * @return true if the snake successfully ate the food
 	 */
 	public boolean eatFood(Food f) {
-		//FIXME
+		double dis = Math.sqrt(Math.pow(this.segments.getFirst().getX()-f.getX(), 2)+Math.pow(this.segments.getFirst().getY()-f.getY(), 2));
+		if (dis <= SEGMENT_SIZE+Food.FOOD_SIZE) {
+
+			this.segments.addLast(prevLast);
+			return true;
+		}
+
 		return false;
 	}
 	
@@ -62,7 +81,13 @@ public class Snake {
 	 * @return whether or not the head is in the bounds of the window
 	 */
 	public boolean isInbounds() {
-		//FIXME
-		return true;
+		if (segments.getFirst().getX() <= 1 && segments.getFirst().getX() >= 0 && segments.getFirst().getY() <= 1 && segments.getFirst().getY() >= 0) {
+			return true;
+		}
+		return false;
+	}
+
+	public int length() {
+		return segments.size();
 	}
 }

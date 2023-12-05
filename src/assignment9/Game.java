@@ -1,23 +1,39 @@
 package assignment9;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 
 import edu.princeton.cs.introcs.StdDraw;
 
 public class Game {
-	
+
+	private Snake snake;
+	private Food food;
+	public final int WAIT_TIME = 75; // I made the wait time 75 because I thought the snake was moving too fast
+	public final double MIDDLE_OF_SCREEN = 0.5;
+
 	public Game() {
 		StdDraw.enableDoubleBuffering();
-		
-		//FIXME - construct new Snake and Food objects
+
+		this.snake = new Snake();
+		this.food = new Food();
 	}
-	
+
 	public void play() {
-		while (true) { //TODO: Update this condition to check if snake is in bounds
+		while (snake.isInbounds()) { // Check if snake is in bounds
 			int dir = getKeypress();
-			//Testing only: you will eventually need to do more work here
 			System.out.println("Keypress: " + dir);
-			
+
+			snake.move();
+			snake.changeDirection(dir);
+
+			updateDrawing();
+
+			if (snake.eatFood(this.food)) {
+				this.food = new Food();
+			}
+
 			/*
 			 * 1. Pass direction to your snake
 			 * 2. Tell the snake to move
@@ -25,8 +41,12 @@ public class Game {
 			 * 4. Update the drawing
 			 */
 		}
+
+		StdDraw.setPenColor(Color.RED);
+		StdDraw.text(MIDDLE_OF_SCREEN,MIDDLE_OF_SCREEN, "GAME OVER");
+		StdDraw.show();
 	}
-	
+
 	private int getKeypress() {
 		if(StdDraw.isKeyPressed(KeyEvent.VK_W)) {
 			return 1;
@@ -40,21 +60,27 @@ public class Game {
 			return -1;
 		}
 	}
-	
+
 	/**
 	 * Clears the screen, draws the snake and food, pauses, and shows the content
 	 */
 	private void updateDrawing() {
-		//FIXME
-		
 		/*
 		 * 1. Clear screen
 		 * 2. Draw snake and food
 		 * 3. Pause (50 ms is good)
 		 * 4. Show
 		 */
+
+		StdDraw.clear();
+		snake.draw();
+		food.draw();
+		StdDraw.setPenColor();
+		StdDraw.textLeft(0.01, 0.02, "Score: "+ snake.length());
+		StdDraw.pause(WAIT_TIME);
+		StdDraw.show();
 	}
-	
+
 	public static void main(String[] args) {
 		Game g = new Game();
 		g.play();
